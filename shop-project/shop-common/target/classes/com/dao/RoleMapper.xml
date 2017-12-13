@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.RoleMapper">
+	<resultMap id="BaseResultMap" type="com.model.Role">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, role_name
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from role
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from role
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.model.Role" useGeneratedKeys="true" >
+		insert into role (id,
+		role_name)
+		values (#{id,jdbcType=INTEGER},
+		#{roleName,jdbcType=VARCHAR})
+		<selectKey resultType="int" order="AFTER" keyProperty="id">
+		SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+	<insert id="insertSelective" parameterType="com.model.Role" >
+		insert into role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="roleName != null">
+				role_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="roleName != null">
+				#{roleName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.model.Role">
+		update role
+		<set>
+			<if test="roleName != null">
+				role_name = #{roleName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.model.Role">
+		update role
+		set
+		role_name = #{roleName,jdbcType=VARCHAR}
+		where id =
+		#{id,jdbcType=INTEGER}
+	</update>
+
+	<resultMap type="Role" id="roleMap" autoMapping="true">
+		<id column="id" property="id" />
+		<collection property="powerRoleRelation" autoMapping="true"
+			ofType="PowerRoleRelation">
+			<id column="rp_id" property="id" />
+			<association property="power" javaType="Power" autoMapping="true">
+				<id column="p1_id" property="id" />
+				<collection property="subPowers" ofType="Power">
+					<id column="p_id" property="id" />
+					<result column="p_power_name" property="powerName" jdbcType="VARCHAR" />
+					<result column="p_power_url" property="powerUrl" jdbcType="VARCHAR" />
+					<result column="p_is_on" property="isOn" jdbcType="VARCHAR" />
+					<result column="p_power_order" property="powerOrder"
+						jdbcType="INTEGER" />
+					<result column="p_parent_id" property="parentId" jdbcType="INTEGER" />
+					<result column="p_power_icon" property="powerIcon" jdbcType="VARCHAR" />
+				</collection>
+			</association>
+		</collection>
+
+	</resultMap>
+
+	<select id="selectRole" parameterType="Role" resultMap="roleMap">
+		SELECT
+		r.id,
+		r.role_name,
+		rp.id rp_id,
+		rp.role_id,
+		rp.power_id,
+		p.id p1_id,
+		p.power_name,
+		p.power_url,
+		p.is_on,
+		p.power_order,
+		p.parent_id,
+		p.power_icon,
+		p2.id p_id,
+		p2.power_name p_power_name,
+		p2.power_url p_power_url,
+		p2.is_on p_is_on,
+		p2.power_order p_power_order,
+		p2.parent_id p_parent_id,
+		p2.power_icon p_power_icon
+		FROM
+		role AS r
+		Left
+		Join power_role_relation AS rp ON r.id =
+		rp.role_id
+		Left Join `power` AS
+		p ON rp.power_id = p.id
+		Left Join `power` AS p2 ON p.id = p2.parent_id
+		<where>
+			<if test="id!=null and id!=-1">
+				and r.id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="roleName != null and roleName!=''">
+				and r.role_name like
+				concat('%',#{roleName,jdbcType=VARCHAR},'%')
+			</if>
+		</where>
+
+	</select>
+</mapper>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.ActivityMapper">
+	<resultMap id="BaseResultMap" type="com.model.Activity">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="is_current" property="isCurrent" jdbcType="CHAR" />
+		<result column="is_start" property="isStart" jdbcType="CHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, start_time, end_time, is_current, is_start
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from activity
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		activity
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	
+	
+	<insert id="insert" parameterType="com.model.Activity">
+		insert into activity (id,
+		start_time, end_time,
+		is_current, is_start)
+		values
+		(#{id,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP},
+		#{endTime,jdbcType=TIMESTAMP},
+		#{isCurrent,jdbcType=CHAR},
+		#{isStart,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.model.Activity">
+		insert into activity
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="startTime != null">
+				start_time,
+			</if>
+			<if test="endTime != null">
+				end_time,
+			</if>
+			<if test="isCurrent != null">
+				is_current,
+			</if>
+			<if test="isStart != null">
+				is_start,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="startTime != null">
+				#{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				#{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isCurrent != null">
+				#{isCurrent,jdbcType=CHAR},
+			</if>
+			<if test="isStart != null">
+				#{isStart,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.model.Activity">
+		update activity
+		<set>
+			<if test="startTime != null">
+				start_time = #{startTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endTime != null">
+				end_time = #{endTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isCurrent != null">
+				is_current = #{isCurrent,jdbcType=CHAR},
+			</if>
+			<if test="isStart != null">
+				is_start = #{isStart,jdbcType=CHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.model.Activity">
+		update activity
+		set start_time = #{startTime,jdbcType=TIMESTAMP},
+		end_time =
+		#{endTime,jdbcType=TIMESTAMP},
+		is_current = #{isCurrent,jdbcType=CHAR},
+		is_start = #{isStart,jdbcType=CHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectActivity" parameterType="Activity" resultType="Activity">
+		select
+		<include refid="Base_Column_List" />
+		from activity
+		<where>
+			<if test="id!=null">
+				and id = #{id,jdbcType=INTEGER}
+			</if>
+			
+			<if test="isCurrent != null">
+				and is_current = #{isCurrent,jdbcType=CHAR}
+			</if>
+			<if test="isStart != null">
+			and	is_start = #{isStart,jdbcType=CHAR}
+			</if>
+		</where>
+	</select>
+
+	<resultMap type="Activity" id="acrMap" autoMapping="true">
+		<id column="a_id" property="id" />
+		<collection property="aCouponRelations" autoMapping="true"
+			ofType="AvtivityCouponRelation" fetchType="eager">
+			<id column="id" property="id" />
+			<association property="coupon" autoMapping="true"
+				javaType="Coupon">
+				<id column="c_id" property="id" />
+			</association>
+		</collection>
+	</resultMap>
+
+	<select id="selectAll" parameterType="Activity" resultMap="acrMap">
+		SELECT
+		a.id a_id,
+		a.start_time,
+		a.end_time,
+		a.is_current,
+		a.is_start,
+		acr.id,
+		acr.activity_id,
+		acr.coupon_id,
+		acr.coupon_count,
+		c.id c_id,
+		c.coupon_type,
+		c.coupon_price,
+		c.coupon_max_price,
+		c.use_start_time,
+		c.use_end_time
+		FROM activity a
+		Left Join avtivity_coupon_relation AS acr
+		ON acr.activity_id = a.id
+		Left
+		Join coupon c
+		ON acr.coupon_id=c.id
+		<where>
+			<if test="id != null">
+				and a.id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="startTime != null">
+			 and start_time &gt;= #{startTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime != null">
+			 and start_time &lt;= #{endTime,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+
+	</select>
+
+
+</mapper>

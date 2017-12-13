@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.ClassifyRelationMapper">
+	<resultMap id="BaseResultMap" type="com.model.ClassifyRelation">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="classify_id" property="classifyId" jdbcType="INTEGER" />
+		<result column="classify_id_two" property="classifyIdTwo"
+			jdbcType="INTEGER" />
+		<result column="relation_order" property="relationOrder"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, classify_id, classify_id_two, relation_order
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from classify_relation
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from classify_relation
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.model.ClassifyRelation">
+		insert into classify_relation (id, classify_id, classify_id_two,
+		relation_order)
+		values (#{id,jdbcType=INTEGER}, #{classifyId,jdbcType=INTEGER},
+		#{classifyIdTwo,jdbcType=INTEGER},
+		#{relationOrder,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.model.ClassifyRelation">
+		insert into classify_relation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="classifyId != null">
+				classify_id,
+			</if>
+			<if test="classifyIdTwo != null">
+				classify_id_two,
+			</if>
+			<if test="relationOrder != null">
+				relation_order,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="classifyId != null">
+				#{classifyId,jdbcType=INTEGER},
+			</if>
+			<if test="classifyIdTwo != null">
+				#{classifyIdTwo,jdbcType=INTEGER},
+			</if>
+			<if test="relationOrder != null">
+				#{relationOrder,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.model.ClassifyRelation">
+		update classify_relation
+		<set>
+			<if test="classifyId != null">
+				classify_id = #{classifyId,jdbcType=INTEGER},
+			</if>
+			<if test="classifyIdTwo != null">
+				classify_id_two = #{classifyIdTwo,jdbcType=INTEGER},
+			</if>
+			<if test="relationOrder != null">
+				relation_order = #{relationOrder,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.model.ClassifyRelation">
+		update classify_relation
+		set classify_id = #{classifyId,jdbcType=INTEGER},
+		classify_id_two = #{classifyIdTwo,jdbcType=INTEGER},
+		relation_order = #{relationOrder,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<resultMap type="com.model.ClassifyRelation" id="ResultMap"
+		autoMapping="true">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="classify_id" property="classifyId" jdbcType="INTEGER" />
+		<result column="classify_id_two" property="classifyIdTwo"
+			jdbcType="INTEGER" />
+		<result column="relation_order" property="relationOrder"
+			jdbcType="INTEGER" />
+		<association property="productClassify1" autoMapping="true" javaType="com.model.ProductClassify">
+			<id column="pid1" property="id" jdbcType="INTEGER" />
+			<result column="pclassify_name1" property="classifyName"
+				jdbcType="VARCHAR" />
+			<result column="pc_order1" property="cOrder" jdbcType="INTEGER" />
+			<result column="pis_on1" property="isOn" jdbcType="VARCHAR" />
+		</association>
+		<association property="productClassify2" javaType="com.model.ProductClassify" autoMapping="true">
+			<id column="pid2" property="id" jdbcType="INTEGER" />
+			<result column="pclassify_name2" property="classifyName"
+				jdbcType="VARCHAR" />
+			<result column="pc_order2" property="cOrder" jdbcType="INTEGER" />
+			<result column="pis_on2" property="isOn" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<select id="selectAll" resultMap="ResultMap" parameterType="com.model.ClassifyRelation">
+		select c.id,c.classify_id,c.classify_id_two,c.relation_order,p1.id
+		pid1,p1.classify_name pclassify_name1,
+		p1.c_order pc_order1,p1.is_on pis_on1,p2.id pid2,p2.classify_name
+		pclassify_name2,p2.c_order pc_order2,p2.is_on pis_on2
+		from (classify_relation c left join product_classify p1 on
+		c.classify_id=p1.id)left join product_classify p2 on
+		c.classify_id_two=p2.id
+		<trim prefix="where" prefixOverrides="and">
+			<if test="id!=null">
+				and c.id = #{id,jdbcType=INTEGER}
+			</if>
+		</trim>
+		order by relation_order
+	</select>
+</mapper>

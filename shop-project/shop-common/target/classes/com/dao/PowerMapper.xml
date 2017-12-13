@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.PowerMapper">
+	<resultMap id="BaseResultMap" type="com.model.Power">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="power_name" property="powerName" jdbcType="VARCHAR" />
+		<result column="power_url" property="powerUrl" jdbcType="VARCHAR" />
+		<result column="is_on" property="isOn" jdbcType="VARCHAR" />
+		<result column="power_order" property="powerOrder" jdbcType="INTEGER" />
+		<result column="parent_id" property="parentId" jdbcType="INTEGER" />
+		<result column="power_icon" property="powerIcon" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, power_name, power_url, is_on, power_order, parent_id,
+		power_icon
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from power
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="select" parameterType="Power" resultType="Power">
+		select
+		<include refid="Base_Column_List" />
+		from power
+		<where>
+			<if test="id!=null">
+				and id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="powerName != null">
+				and power_name like concat('%',#{powerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="powerUrl != null">
+				and power_url = #{powerUrl,jdbcType=VARCHAR}
+			</if>
+			<if test="isOn != null">
+				and is_on = #{isOn,jdbcType=VARCHAR}
+			</if>
+			<if test="powerOrder != null">
+				and power_order = #{powerOrder,jdbcType=INTEGER}
+			</if>
+			<if test="parentId != null">
+				and parent_id = #{parentId,jdbcType=INTEGER}
+			</if>
+			<if test="powerIcon != null">
+				and power_icon = #{powerIcon,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by power_order
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from power
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByParentId" parameterType="java.lang.Integer">
+		delete from power
+		where parent_id = #{id,jdbcType=INTEGER}
+	</delete>
+	
+	<insert id="insert" parameterType="com.model.Power">
+		insert into power (id,
+		power_name, power_url,
+		is_on, power_order, parent_id,
+		power_icon)
+		values
+		(#{id,jdbcType=INTEGER}, #{powerName,jdbcType=VARCHAR},
+		#{powerUrl,jdbcType=VARCHAR},
+		#{isOn,jdbcType=VARCHAR},
+		#{powerOrder,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER},
+		#{powerIcon,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.model.Power">
+		insert into power
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="powerName != null">
+				power_name,
+			</if>
+			<if test="powerUrl != null">
+				power_url,
+			</if>
+			<if test="isOn != null">
+				is_on,
+			</if>
+			<if test="powerOrder != null">
+				power_order,
+			</if>
+			<if test="parentId != null">
+				parent_id,
+			</if>
+			<if test="powerIcon != null">
+				power_icon,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="powerName != null">
+				#{powerName,jdbcType=VARCHAR},
+			</if>
+			<if test="powerUrl != null">
+				#{powerUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="isOn != null">
+				#{isOn,jdbcType=VARCHAR},
+			</if>
+			<if test="powerOrder != null">
+				#{powerOrder,jdbcType=INTEGER},
+			</if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="powerIcon != null">
+				#{powerIcon,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.model.Power">
+		update power
+		<set>
+			<if test="powerName != null">
+				power_name = #{powerName,jdbcType=VARCHAR},
+			</if>
+			<if test="powerUrl != null">
+				power_url = #{powerUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="isOn != null">
+				is_on = #{isOn,jdbcType=VARCHAR},
+			</if>
+			<if test="powerOrder != null">
+				power_order = #{powerOrder,jdbcType=INTEGER},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="powerIcon != null">
+				power_icon = #{powerIcon,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.model.Power">
+		update power
+		set
+		power_name = #{powerName,jdbcType=VARCHAR},
+		power_url =
+		#{powerUrl,jdbcType=VARCHAR},
+		is_on = #{isOn,jdbcType=VARCHAR},
+		power_order = #{powerOrder,jdbcType=INTEGER},
+		parent_id =
+		#{parentId,jdbcType=INTEGER},
+		power_icon =
+		#{powerIcon,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<resultMap type="Power" id="powerMap" autoMapping="true">
+		<id column="id" property="id" />
+		<collection property="subPowers" ofType="Power">
+			<id column="p_id" property="id" />
+			<result column="p_power_name" property="powerName" jdbcType="VARCHAR" />
+			<result column="p_power_url" property="powerUrl" jdbcType="VARCHAR" />
+			<result column="p_is_on" property="isOn" jdbcType="VARCHAR" />
+			<result column="p_power_order" property="powerOrder" jdbcType="INTEGER" />
+			<result column="p_parent_id" property="parentId" jdbcType="INTEGER" />
+			<result column="p_power_icon" property="powerIcon" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<select id="selectPower" parameterType="Power" resultMap="powerMap">
+		SELECT
+		p1.id,
+		p1.power_name,
+		p1.power_url,
+		p1.is_on,
+		p1.power_order,
+		p1.parent_id,
+		p1.power_icon,
+		p2.id p_id,
+		p2.power_name p_power_name,
+		p2.power_url p_power_url,
+		p2.is_on p_is_on,
+		p2.power_order
+		p_power_order,
+		p2.parent_id p_parent_id,
+		p2.power_icon p_power_icon
+		FROM
+		`power` AS p1
+		Left Join `power` AS p2 ON p1.id = p2.parent_id
+
+		<where>
+			<if test="id!=null">
+				and p1.id = #{id,jdbcType=INTEGER}
+			</if>
+			<if test="powerName != null and powerName!=''">
+				and p1.power_name like concat('%',
+				#{powerName,jdbcType=VARCHAR},'%')
+			</if>
+			<if test="powerUrl != null">
+				and p1.power_url = #{powerUrl,jdbcType=VARCHAR}
+			</if>
+			<if test="isOn != null">
+				and p1.is_on = #{isOn,jdbcType=VARCHAR}
+			</if>
+			<if test="powerOrder != null">
+				and p1.power_order = #{powerOrder,jdbcType=INTEGER}
+			</if>
+			<if test="parentId != null">
+				and p1.parent_id = #{parentId,jdbcType=INTEGER},
+			</if>
+			<if test="powerIcon != null">
+				and power_icon = #{powerIcon,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</select>
+
+
+</mapper>

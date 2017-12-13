@@ -1,0 +1,15 @@
+package com.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+@RequestMapping("/Product")
+@Controller
+public class ProductController {
+
+	@RequestMapping("/toProduct")
+	public String toProduct(){
+//		return "/product/list-product";
+		return "/product/edit-product";
+//		return "/product/upload-product";
+	}
+}

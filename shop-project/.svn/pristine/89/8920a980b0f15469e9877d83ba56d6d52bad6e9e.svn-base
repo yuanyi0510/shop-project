@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.ProductAttrMapper" >
+  <resultMap id="BaseResultMap" type="com.model.ProductAttr" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="attr_name" property="attrName" jdbcType="VARCHAR" />
+    <collection property="productAttrValues" autoMapping="true" ofType="com.model.ProductAttrValue">
+    <id column="pid" property="id"/>
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, attr_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from product_attr
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from product_attr
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.model.ProductAttr" >
+    insert into product_attr (id, attr_name)
+    values (#{id,jdbcType=INTEGER}, #{attrName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.model.ProductAttr" >
+    insert into product_attr
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="attrName != null" >
+        attr_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="attrName != null" >
+        #{attrName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.model.ProductAttr" >
+    update product_attr
+    <set >
+      <if test="attrName != null" >
+        attr_name = #{attrName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.model.ProductAttr" >
+    update product_attr
+    set attr_name = #{attrName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="com.model.ProductAttr" >
+    select 
+    p1.id,p1.attr_name,p2.id pid,p2.attr_value,p2.attr_id
+    from product_attr p1 left join product_attr_value p2 on p1.id=p2.attr_id
+    <trim prefix="where" prefixOverrides="and">
+    <if test="id!=null">
+    and p1.id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="attrName!=null and attrName!=''">
+    and attr_name like concat("%",#{attrName},"%")
+    </if>
+    </trim>
+  </select>
+  
+   <insert id="insertProductAttr" parameterType="com.model.ProductAttr" useGeneratedKeys="true">
+    insert into product_attr (id, attr_name)
+    values (#{id,jdbcType=INTEGER}, #{attrName,jdbcType=VARCHAR})
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+    	SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  </insert>
+  
+  
+</mapper>

@@ -1,0 +1,24 @@
+package com.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/user")
+public class UserController {
+
+	@RequestMapping("/tologin")
+	public String tologin(){
+		return "/adminuser/login";
+	}
+	
+	@RequestMapping("/touserlist")
+	public String touserlist(){
+		return "/adminuser/list-user";
+	}
+	
+	@RequestMapping("/toupdate")
+	public String toupdate(){
+		return "/adminuser/edit-user";
+	}
+}
